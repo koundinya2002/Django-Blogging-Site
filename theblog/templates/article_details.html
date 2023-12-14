@@ -1,0 +1,66 @@
+{% extends 'base.html' %}
+{% block title %}
+    {{ post.title_tag }}
+{% endblock %}
+
+
+{% block content %}
+
+
+
+<h1>{{ post.title }}</h1>
+<small>By:
+    
+    {{ post.author.first_name}} - 
+    {{ post.post_date }} |
+   
+    {% if user.is_authenticated %}
+
+        {% if user.id == post.author.id %}
+            <a href="{% url 'update_post' post.pk %}">edit</a> |
+            <a href="{% url 'delete_post' post.pk %}">delete</a>
+        {% endif %}
+
+    {% endif %}
+
+</small><br><hr>
+{% if post.header_image %}
+    <img src="{{post.header_image.url}}"> 
+{% endif %}
+{{post.body| safe}}
+
+
+<br><br>
+<a href="{% url 'home' %}" class="btn btn-secondary">Back</a>
+
+<br><br>
+<hr>
+<br>
+
+
+{% if user.is_authenticated %}
+
+    <form action="{% url 'like_post' post.pk %}" method="POST">
+        {% csrf_token %}
+        
+        <button type="submit", name="post_id", value="{{ post.id}}" class="btn btn-primary btn-sm">Like</button> - {{ post.total_likes }} like(s)
+
+    </form>
+
+{% else %}
+    <small>
+        <button value="{{ post.id}}" class="btn btn-outline-secondary">
+            <a class="nav-link" href="{% url 'login' %}">Login to like</a>
+        </button> - {{post.total_likes}} like(s)
+    </small>
+
+
+{% endif %}
+
+<br>
+
+
+
+
+
+{% endblock %}
