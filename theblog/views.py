@@ -1,10 +1,11 @@
 from typing import Any
 from django.shortcuts import render, get_object_or_404
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
-from .models import Post
-from .forms import PostForm, EditForm
+from .models import Post, Comment, Reply
+from .forms import PostForm, EditForm, CommentForm, ResponseForm
 from django.urls import reverse_lazy, reverse
 from django.http import HttpResponseRedirect
+from django.contrib.auth.models import User, Group
 
 
 def LikeView(request, pk):
@@ -16,42 +17,46 @@ def LikeView(request, pk):
     else:
         post.likes.add(request.user)
         liked = True
+    return HttpResponseRedirect(reverse("home"))
+
+
+def LikeArticleView(request, pk):
+    post = get_object_or_404(Post, pk=pk)
+    liked = False
+    if post.likes.filter(id=request.user.id).exists():
+        post.likes.remove(request.user)
+        liked = False
+    else:
+        post.likes.add(request.user)
+        liked = True
     return HttpResponseRedirect(reverse("article-detail", args=[str(pk)]))
 
-class HomeView(ListView):
-    model = Post
-    template_name = 'home.html'
-    ordering = ['-post_date']
+
+def home(request):
+    blogs = Post.objects.all()
+    blogs = tuple(reversed(blogs))
+    users_in_group = User.objects.filter(groups__name = "verification")
+    devs = User.objects.filter(groups__name = "developers")
+    # verified = User.groups.filter(groups_name="verified")
+    return render(request, "test.html", {
+        "files": blogs,
+        "verified": users_in_group,
+        "developers": devs,
+    })
 
 
 class ArticleDetailView(DetailView):
     model = Post
     template_name = 'article_details.html'
 
-    # def get_context_data(self, *args, **kwargs):
-    #     stuff = get_object_or_404(Post, id=self.kwargs['pk'])
-    #     likes = stuff.total_likes()
-    #     context=[]
 
-    #     liked = False
-    #     if stuff.likes.filter(id=self.request.user.id).exists():
-    #         liked = True
-
-    #     context["total_likes"] = total_likes
-    #     context["liked"] = liked
-    #     return context
-
-
-class AddPostView(CreateView):
-    model = Post
-    form_class = PostForm
-    template_name = 'add_post.html'
 
 class UpdatePostView(UpdateView):
     model = Post
     form_class = EditForm
     template_name = 'update_post.html'
     #fields = ['title', 'title_tag', 'body']
+
 
 class DeletePostView(DeleteView):
     model = Post
@@ -60,7 +65,6 @@ class DeletePostView(DeleteView):
 
 
 class AddPostView(CreateView):
-
     model = Post
     form_class = PostForm
     template_name = 'add_post.html'
@@ -68,6 +72,34 @@ class AddPostView(CreateView):
     def form_valid(self, form):
         form.instance.author = self.request.user
         return super().form_valid(form)
-    
 
 
+class commenting(CreateView):
+    model = Comment
+    form_class = CommentForm
+    template_name = 'article_details.html'
+
+    def form_valid(self, form):
+        form.instance.author = self.request.user
+        form.instance.post_id = self.kwargs['pk']
+        return super().form_valid(form)
+    success_url = reverse_lazy("home")
+
+def comment_order():
+    comments = Comment.objects.filter(post = Post.pk)
+    comments = tuple(reversed(comments))
+    return render("article-details.html",{
+        "comments": comments
+    })
+
+
+class responses(CreateView):
+    model = Reply
+    form_class = ResponseForm
+    template_name = 'responses.html'
+
+    def form_valid(self, form):
+        form.instance.author = self.request.user
+        form.instance.comment_id = self.kwargs['pk']
+        return super().form_valid(form)
+    success_url = reverse_lazy("home")
