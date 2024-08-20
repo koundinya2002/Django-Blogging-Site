@@ -44,3 +44,11 @@ class Reply(models.Model):
 
     def __str__(self):
         return "%s | %s | %s" % (self.comment, self.author, self.body)
+    
+
+class Profile(models.Model):
+    user = models.OneToOneField(User, null=True, on_delete=models.CASCADE)
+    bio = models.TextField(max_length=255)
+    
+    def __str__(self):
+        return str(self.user)
