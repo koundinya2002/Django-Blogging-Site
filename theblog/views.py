@@ -1,11 +1,12 @@
+from typing import Any
 from django.shortcuts import render, get_object_or_404
-from django.views.generic import DetailView, CreateView, UpdateView, DeleteView
+from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
 from .models import Post, Comment, Reply
 from .forms import PostForm, EditForm, CommentForm, ResponseForm
 from django.urls import reverse_lazy, reverse
 from django.http import HttpResponseRedirect
-from django.contrib.auth.models import User
-
+from django.contrib.auth.models import User, Group
+from django.contrib.auth.decorators import login_required
 
 def LikeView(request, pk):
     post = get_object_or_404(Post, pk=pk)
@@ -36,7 +37,8 @@ def home(request):
     blogs = tuple(reversed(blogs))
     users_in_group = User.objects.filter(groups__name = "verification")
     devs = User.objects.filter(groups__name = "developers")
-    return render(request, "test.html", {
+    # verified = User.groups.filter(groups_name="verified")
+    return render(request, "home.html", {
         "files": blogs,
         "verified": users_in_group,
         "developers": devs,
