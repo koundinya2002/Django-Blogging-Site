@@ -1,0 +1,142 @@
+{% if user.is_authenticated %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Khronicler</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Special+Elite&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Playwrite+CU:wght@100..400&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Handjet:wght@100..900&display=swap');
+
+
+        body {
+            font-family: "Special Elite", system-ui;
+            margin: 1rem;
+        }
+
+        header {
+            justify-content: center;
+            text-align: center;
+            line-height: 1.5rem;
+            margin-bottom: 0%;
+        }
+
+        a {
+            text-decoration: none;
+            color: black;
+        }
+
+        .blog {
+            border-color: rgb(130, 133, 133);
+            border-width: 3px;
+            border-style: dashed;
+            border-radius: 15px;
+            padding: 10px;
+        }
+
+        .blog-title {
+            font-size: 25px;
+            margin: 0%;
+            font-family: "Handjet", sans-serif;
+            font-weight: bold;
+            font-style: italic;
+        }
+
+
+        .blog-details {
+            font-family: "Playwrite CU", cursive;
+            font-size: small;
+            padding: 0;
+            margin: 0;
+        }
+
+        img {
+            width: 100%;
+            height: auto;
+        }
+
+        .footer-content {
+          text-align: center;
+          color: black;
+        }
+
+        .footer-title {
+          font-size: 24px;
+          font-weight: bold;
+        }
+
+        .footer-subtitle {
+          font-size: 16px;
+          margin-top: 10px;
+        }
+
+    </style>
+</head>
+<body>
+    <header>
+        <h3>
+            | Hi {{ request.user }}! |
+            <<a href="{% url 'add_post' %}">add post</a>> |
+            <<a href="{% url 'edit_profile' %}">settings</a>> |
+            <<a href="{% url 'user_guidelines'  %}">user guidelines</a>> |
+            <form id="logout-form" method="post" action="{% url 'logout' %}">
+                {% csrf_token %}
+                <button type="submit">logout</button>
+            </form>
+        </h3>
+    </header><hr>
+    {% for b in files %}
+        <section class="blog">
+
+            <p class="blog-details">
+                By <b>{{ b.author }}</b> at <small>{{ b.post_date }}
+                {% if user.is_authenticated %}
+                    {% if user.id == b.author.id %}
+                        | <a href="{% url 'update_post' b.pk %}">edit</a> |
+                        <a href="{% url 'delete_post' b.pk %}">delete</a>
+                    {% endif %}
+                {% endif %}</small>
+            </p><hr>
+
+            <section class="blog-title">
+                {{ b.title|safe }}
+            </section>
+
+            {% if b.image %}
+                <img src="{{b.image.url}}">
+            {% endif %}
+
+            <a href="{% url 'article-detail' b.pk %}">
+                <p class="blog-content">{{ b.body|safe }}</p>
+            </a>
+
+            <p class="blog-details">
+                <a href="{% url 'article-detail' b.pk %}">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-chat-square-heart-fill" viewBox="0 0 16 16">
+                        <path d="M2 0a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2.5a1 1 0 0 1 .8.4l1.9 2.533a1 1 0 0 0 1.6 0l1.9-2.533a1 1 0 0 1 .8-.4H14a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2zm6 3.993c1.664-1.711 5.825 1.283 0 5.132-5.825-3.85-1.664-6.843 0-5.132"/>
+                    </svg> {{ b.total_likes }} likes
+                </a>
+            </p>
+
+        </section>
+    <br>
+    {% endfor %}
+
+
+    <div class="footer" id="footer">
+        <div class="footer-content">
+            <p class="footer-subtitle"><b>An ENTHS Production!</b></p>
+        </div>
+    </div>
+</body>
+</html>
+
+
+{% else %}
+
+<h1>Access denied, <a href="{% url 'login' %}">click here</a> for access!</h1>
+
+{% endif %}
