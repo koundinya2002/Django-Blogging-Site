@@ -7,6 +7,11 @@ from django.urls import reverse_lazy, reverse
 from django.http import HttpResponseRedirect
 from django.contrib.auth.models import User, Group
 from django.contrib.auth.decorators import login_required
+from rest_framework.response import Response
+from rest_framework.decorators import api_view
+from .serializers import PostSerializer
+import requests
+from django.shortcuts import render
 
 def LikeView(request, pk):
     post = get_object_or_404(Post, pk=pk)
@@ -55,7 +60,6 @@ class UpdatePostView(UpdateView):
     model = Post
     form_class = EditForm
     template_name = 'update_post.html'
-    #fields = ['title', 'title_tag', 'body']
 
 
 class DeletePostView(DeleteView):
@@ -103,3 +107,9 @@ class responses(CreateView):
         form.instance.comment_id = self.kwargs['pk']
         return super().form_valid(form)
     success_url = reverse_lazy("home")
+
+
+def api_home(request):
+    response = requests.get('http://localhost:8000/api_home/')
+    data = response.json()
+    return render(request, 'test.html', {'data': serializer})
