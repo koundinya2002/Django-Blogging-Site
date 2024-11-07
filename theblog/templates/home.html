@@ -65,6 +65,10 @@
           margin-top: 10px;
         }
 
+        a {
+            text-decoration: none;
+            color: black;
+        }
     </style>
 </head>
 <body>
@@ -82,26 +86,34 @@
     </header><hr>
     {% for b in files %}
         <section class="blog">
-            <h2>
-                {{ b.title|safe }}
-                <!--{% if b.author in developers %}-->
-                <!--    <span id="hover-item">-->
-                <!--        <span class="badge1">&check;</span>-->
-                <!--        <span id="hover-content">Dev at Khronicler</span>-->
-                <!--    </span>-->
-                <!--{% endif %}-->
-                <!--{% if b.author in verified %}-->
-                <!--    <span id="hover-item">-->
-                <!--        <span class="badge2">&check;</span>-->
-                <!--        <span id="hover-content">Verified User of Khronicler</span>-->
-                <!--    </span>-->
-                <!--{% endif %}-->
-            </h2>
-            {% if b.image %}
-            <img src="{{b.image.url}}">
+            <a href="{% url 'article-detail' b.pk %}">
+                <h2>
+                    {{ b.title|safe }}<span class="blog-time">- by <b>{{ b.author }}</b> at <small>{{ b.post_date }}</small></span>
+                    <!--{% if b.author in developers %}-->
+                    <!--    <span id="hover-item">-->
+                    <!--        <span class="badge1">&check;</span>-->
+                    <!--        <span id="hover-content">Dev at Khronicler</span>-->
+                    <!--    </span>-->
+                    <!--{% endif %}-->
+                    <!--{% if b.author in verified %}-->
+                    <!--    <span id="hover-item">-->
+                    <!--        <span class="badge2">&check;</span>-->
+                    <!--        <span id="hover-content">Verified User of Khronicler</span>-->
+                    <!--    </span>-->
+                    <!--{% endif %}-->
+                </h2>
+                {% if b.image %}
+                <img src="{{b.image.url}}">
+                {% endif %}
+                <p class="blog-content">{{ b.body|safe }}</p>
+                {{ b.total_likes }} &#128077 
+                {% if user.is_authenticated %}
+                {% if user.id == b.author.id %}
+                    | <a href="{% url 'update_post' b.pk %}">edit</a> |
+                    <a href="{% url 'delete_post' b.pk %}">delete</a>
+                {% endif %}
             {% endif %}
-            <p class="blog-content">{{ b.body|safe }}</p>
-            <p class="blog-time">- by <b>{{ b.author }}</b> at <small>{{ b.post_date }}</small></p>
+            </a>
         </section>
         <br>
     {% endfor %}

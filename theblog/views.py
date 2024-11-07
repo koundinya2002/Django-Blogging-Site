@@ -109,7 +109,5 @@ class responses(CreateView):
     success_url = reverse_lazy("home")
 
 
-def api_home(request):
-    response = requests.get('http://localhost:8000/api_home/')
-    data = response.json()
-    return render(request, 'test.html', {'data': serializer})
+# def api_home(request):    
+#     return render(request, 'test.html', {'data': serializer})

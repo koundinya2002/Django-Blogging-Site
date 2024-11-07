@@ -9,9 +9,9 @@ from django.conf.urls.static import static
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', include('theblog.urls')),
-    path('members/',include('django.contrib.auth.urls')),
-    path('members/', include('members.urls')),
+    path('blog/', include('theblog.urls')),
+    path('',include('django.contrib.auth.urls')),
+    path('', include('members.urls')),
     # path('<int:id>/password/', auth_views.PasswordChangeView.as_view()),
     path('<int:uid>/password/', PasswordsChangeView.as_view())
 
