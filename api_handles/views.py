@@ -1,11 +1,8 @@
-from django.shortcuts import render
 from .serializers import PostSerializer, UserSerializer
 from rest_framework.response import Response
 from rest_framework.decorators import api_view, authentication_classes, permission_classes
-import requests
-from django.contrib.auth.decorators import login_required
 from theblog.models import Post
-from django.contrib.auth.models import User, Group
+from django.contrib.auth.models import User
 from rest_framework import status
 from rest_framework.authtoken.models import Token
 from django.shortcuts import get_object_or_404
