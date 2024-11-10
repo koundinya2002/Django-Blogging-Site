@@ -4,7 +4,6 @@ from .views import ArticleDetailView, AddPostView, UpdatePostView, DeletePostVie
 
 urlpatterns = [
     path('', views.home, name='home'),
-    # path('api_home/', views.api_home, name='api_home'),
     path('article/<int:pk>',ArticleDetailView.as_view(), name = "article-detail"),
     path('add_post/', AddPostView.as_view(), name='add_post'),
     path('article/edit/<int:pk>', UpdatePostView.as_view(), name = "update_post"),
